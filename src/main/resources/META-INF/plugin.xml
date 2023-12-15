@@ -1,0 +1,24 @@
+<idea-plugin>
+    <id>io.github.xiaozhuai.jetbrains-jump-to-file</id>
+    <name>Jump to File</name>
+    <vendor email="798047000@qq.com" url="https://github.com/xiaozhuai">xiaozhuai</vendor>
+    <description><![CDATA[
+    <p>Jump to file from string literal, supports java, c/c++, js, php, python, dart...</p>
+    <p>For example, if you have a string literal like this:</p>
+    <pre>
+    String fileA = "assets/aaa.png";
+    String fileB = "qrc:/assets/aaa.png";
+    String fileC = "whatever://assets/aaa.png";
+    </pre>
+    <p>And you have a file located in <code>${PROJECT_ROOT}/anywhere/assets/aaa.png</code>, then you can jump to it.</p>
+    ]]></description>
+    <change-notes><![CDATA[
+    <ul>
+        <li><b>1.0.0</b> Project init.</li>
+    </ul>
+    ]]></change-notes>
+    <depends>com.intellij.modules.lang</depends>
+    <extensions defaultExtensionNs="com.intellij">
+        <psi.referenceContributor implementation="io.github.xiaozhuai.FileReferenceContributor"/>
+    </extensions>
+</idea-plugin>
