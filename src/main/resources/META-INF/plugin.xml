@@ -14,6 +14,7 @@
     ]]></description>
     <change-notes><![CDATA[
     <ul>
+        <li><b>1.0.1</b> Support 241.*</li>
         <li><b>1.0.0</b> Project init.</li>
     </ul>
     ]]></change-notes>
