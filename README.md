@@ -21,3 +21,5 @@ Jump to file from string literal.
 - `dart`
 - `go`
 - `clojure (via cursive)`
+- `ruby`
+- `rust`
