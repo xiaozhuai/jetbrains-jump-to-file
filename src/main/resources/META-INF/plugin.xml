@@ -14,6 +14,13 @@
     ]]></description>
     <change-notes><![CDATA[
     <ul>
+        <li>
+            <b>1.1.0</b>
+            <ul>
+                <li>Optimize decode string literal expr</li>
+                <li>Add support for groovy, kotlin, go, clojure(via cursive)</li>
+            </ul>
+        </li>
         <li><b>1.0.1</b> Support 241.*</li>
         <li><b>1.0.0</b> Project init.</li>
     </ul>

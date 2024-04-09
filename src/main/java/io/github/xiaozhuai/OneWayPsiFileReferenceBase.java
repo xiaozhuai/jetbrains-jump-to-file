@@ -20,10 +20,13 @@ public abstract class OneWayPsiFileReferenceBase<T extends PsiElement> extends P
     @NotNull
     @Override
     public ResolveResult @NotNull [] multiResolve(boolean incompleteCode) {
-        String cleanFileName = computeStringValue();
-        System.out.println("### filename: " + cleanFileName);
+        String fileName = computeStringValue();
+        System.out.println("### filename: " + fileName);
+        if (fileName.isEmpty()) {
+            return ResolveResult.EMPTY_ARRAY;
+        }
 
-        final String finalCleanFileName = cleanFileName.replace("\\", "/");
+        final String finalFileName = fileName.replace("\\", "/");
 
         Project project = getElement().getProject();
         ProjectFileIndex fileIndex = ProjectRootManager.getInstance(project).getFileIndex();
@@ -44,7 +47,7 @@ public abstract class OneWayPsiFileReferenceBase<T extends PsiElement> extends P
         fileIndex.iterateContent(fileOrDir -> {
             if (!fileOrDir.isDirectory()) {
                 final String finalTargetCleanFileName = fileOrDir.getPath().replace("\\", "/");
-                if (finalTargetCleanFileName.endsWith(finalCleanFileName)) {
+                if (finalTargetCleanFileName.endsWith(finalFileName)) {
                     sortedResults.add(fileOrDir);
                 }
             }
