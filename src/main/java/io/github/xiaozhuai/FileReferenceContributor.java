@@ -141,10 +141,33 @@ public class FileReferenceContributor extends PsiReferenceContributor {
             }
         });
 
+        // ruby
+        registerReferenceProvider(registrar, "org.jetbrains.plugins.ruby.ruby.lang.psi.impl.basicTypes.stringLiterals.RStringLiteralBase", "org.jetbrains.plugins.ruby", (clazz, classLoader, psiElement) -> {
+            try {
+                Method getContent = clazz.getMethod("getContent");
+                return (String) getContent.invoke(psiElement);
+            } catch (Exception e) {
+                System.out.println("!!! Error GetValue: " + e.getMessage());
+                return "";
+            }
+        });
+
         // Rust
+        registerReferenceProvider(registrar, "org.rust.lang.core.psi.RsLitExpr", "com.jetbrains.rust", (clazz, classLoader, psiElement) -> {
+            try {
+                String text = psiElement.getText();
+                if (text.startsWith("\"") && text.endsWith("\"")) {
+                    return text.substring(1, text.length() - 1);
+                }
+                return "";
+            } catch (Exception e) {
+                System.out.println("!!! Error GetValue: " + e.getMessage());
+                return "";
+            }
+        });
+
         // swift
         // c#
-        // ruby
         // perl
     }
 
