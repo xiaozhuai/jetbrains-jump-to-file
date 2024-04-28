@@ -1,10 +1,10 @@
 plugins {
     id("java")
-    id("org.jetbrains.intellij") version "1.5.2"
+    id("org.jetbrains.intellij") version "1.17.3"
 }
 
 group = "io.github.xiaozhuai"
-version = "1.1.1"
+version = "1.1.2"
 
 repositories {
     mavenCentral()
@@ -13,6 +13,8 @@ repositories {
 intellij {
     version.set("2021.2")
     type.set("IU")
+    // version.set("2024.1")
+    // type.set("CL")
 }
 
 tasks {

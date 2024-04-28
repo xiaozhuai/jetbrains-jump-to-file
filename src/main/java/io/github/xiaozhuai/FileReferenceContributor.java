@@ -95,15 +95,16 @@ public class FileReferenceContributor extends PsiReferenceContributor {
         //         return "";
         //     }
         // });
-        registerReferenceProvider(registrar, "com.jetbrains.python.psi.StringLiteralExpression", "com.intellij.modules.python", (clazz, classLoader, psiElement) -> {
-            try {
-                Method getStringValue = clazz.getMethod("getStringValue");
-                return (String) getStringValue.invoke(psiElement);
-            } catch (Exception e) {
-                System.out.println("!!! Error GetValue: " + e.getMessage());
-                return "";
-            }
-        });
+        // registerReferenceProvider(registrar, "com.jetbrains.python.psi.StringLiteralExpression", "com.intellij.modules.python", (clazz, classLoader, psiElement) -> {
+        //     try {
+        //         Method getStringValue = clazz.getMethod("getStringValue");
+        //         return (String) getStringValue.invoke(psiElement);
+        //     } catch (Exception e) {
+        //         System.out.println("!!! Error GetValue: " + e.getMessage());
+        //         return "";
+        //     }
+        // });
+        // https://youtrack.jetbrains.com/issue/PY-70729/
 
         // Dart
         registerReferenceProvider(registrar, "com.jetbrains.lang.dart.psi.DartStringLiteralExpression", "Dart", (clazz, classLoader, psiElement) -> {

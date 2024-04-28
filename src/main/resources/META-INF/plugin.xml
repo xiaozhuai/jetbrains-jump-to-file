@@ -14,6 +14,7 @@
     ]]></description>
     <change-notes><![CDATA[
     <ul>
+        <li><b>1.1.2</b> Temporarily turn off python support</li>
         <li><b>1.1.1</b> Add support for ruby, rust</li>
         <li>
             <b>1.1.0</b>
