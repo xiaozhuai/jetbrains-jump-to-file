@@ -11,9 +11,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Set;
 import java.util.TreeSet;
 
-public abstract class OneWayPsiFileReferenceBase<T extends PsiElement> extends PsiPolyVariantReferenceBase<T> {
+public abstract class MyPsiFileReferenceBase<T extends PsiElement> extends PsiPolyVariantReferenceBase<T> {
 
-    public OneWayPsiFileReferenceBase(T psiElement) {
+    public MyPsiFileReferenceBase(T psiElement) {
         super(psiElement, true);
     }
 
@@ -72,10 +72,11 @@ public abstract class OneWayPsiFileReferenceBase<T extends PsiElement> extends P
         return EMPTY_ARRAY;
     }
 
-    @Override
-    public boolean isReferenceTo(@NotNull PsiElement element) {
-        return false;
-    }
+    // Return false to disable "Find Usages" feature
+    // @Override
+    // public boolean isReferenceTo(@NotNull PsiElement element) {
+    //     return false;
+    // }
 
     @NotNull
     protected abstract String computeStringValue();

@@ -14,6 +14,7 @@
     ]]></description>
     <change-notes><![CDATA[
     <ul>
+        <li><b>1.1.3</b> Support Find Usages by file</li>
         <li><b>1.1.2</b> Temporarily turn off python support</li>
         <li><b>1.1.1</b> Add support for ruby, rust</li>
         <li>
@@ -29,6 +30,6 @@
     ]]></change-notes>
     <depends>com.intellij.modules.lang</depends>
     <extensions defaultExtensionNs="com.intellij">
-        <psi.referenceContributor implementation="io.github.xiaozhuai.FileReferenceContributor"/>
+        <psi.referenceContributor implementation="io.github.xiaozhuai.MyFileReferenceContributor"/>
     </extensions>
 </idea-plugin>
