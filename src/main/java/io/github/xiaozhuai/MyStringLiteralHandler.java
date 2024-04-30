@@ -7,6 +7,7 @@ import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 
 import java.lang.reflect.Method;
+import java.util.Objects;
 
 public abstract class MyStringLiteralHandler {
     private final String className;
@@ -195,11 +196,15 @@ public abstract class MyStringLiteralHandler {
                         @Override
                         protected String getValue(PsiElement psiElement) {
                             try {
+                                // TODO Unescape
                                 String text = psiElement.getText();
                                 if ((text.startsWith("\"") && text.endsWith("\"")) || (text.startsWith("'") && text.endsWith("'"))) {
-                                    return text.substring(1, text.length() - 1);
+                                    text = text.substring(1, text.length() - 1);
+                                    text = text.replace("\\\\", "\\");
+                                    return text;
+                                } else {
+                                    return "";
                                 }
-                                return "";
                             } catch (Exception e) {
                                 System.out.println("!!! Error GetValue: " + e.getMessage());
                                 return "";
@@ -254,11 +259,10 @@ public abstract class MyStringLiteralHandler {
                         @Override
                         protected String getValue(PsiElement psiElement) {
                             try {
-                                String text = psiElement.getText();
-                                if (text.startsWith("\"") && text.endsWith("\"")) {
-                                    return text.substring(1, text.length() - 1);
-                                }
-                                return "";
+                                Class<?> rsLitExprKtClazz = Class.forName("org.rust.lang.core.psi.ext.RsLitExprKt", true, this.getClassLoader());
+                                Method getStringValue = rsLitExprKtClazz.getMethod("getStringValue", this.getClazz());
+                                String text = (String) getStringValue.invoke(null, psiElement);
+                                return Objects.requireNonNullElse(text, "");
                             } catch (Exception e) {
                                 System.out.println("!!! Error GetValue: " + e.getMessage());
                                 return "";
