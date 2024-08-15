@@ -14,6 +14,7 @@
     ]]></description>
     <change-notes><![CDATA[
     <ul>
+        <li><b>1.1.6</b> Support 242.*</li>
         <li><b>1.1.5</b> Code cleanup</li>
         <li><b>1.1.4</b> Optimize get text for rust, dart</li>
         <li><b>1.1.3</b> Support Find Usages by file</li>
