@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "io.github.xiaozhuai"
-version = "1.1.7"
+version = "1.1.8"
 
 repositories {
     mavenCentral()
@@ -13,7 +13,7 @@ repositories {
 intellij {
     version.set("2021.2")
     type.set("IU")
-    // version.set("2024.1")
+    // version.set("2024.2")
     // type.set("CL")
 }
 

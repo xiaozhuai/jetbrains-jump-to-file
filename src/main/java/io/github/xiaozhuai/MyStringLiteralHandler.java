@@ -123,6 +123,7 @@ public abstract class MyStringLiteralHandler {
                     //         }
                     //     }
                     // },
+                    // TODO: Support Clion Nova, aka Rider
                     new MyStringLiteralHandler("com.jetbrains.cidr.lang.psi.OCLiteralExpression", "com.intellij.modules.cidr.lang") {
                         @Override
                         protected String getValue(PsiElement psiElement) {
@@ -177,19 +178,18 @@ public abstract class MyStringLiteralHandler {
                     //         }
                     //     }
                     // },
-                    // TODO https://youtrack.jetbrains.com/issue/PY-70729/
-                    // new MyStringLiteralHandler("com.jetbrains.python.psi.StringLiteralExpression", "com.intellij.modules.python") {
-                    //     @Override
-                    //     protected String getValue(PsiElement psiElement) {
-                    //         try {
-                    //             Method getStringValue = this.getClazz().getMethod("getStringValue");
-                    //             return (String) getStringValue.invoke(psiElement);
-                    //         } catch (Exception e) {
-                    //             System.out.println("!!! Error GetValue: " + e.getMessage());
-                    //             return "";
-                    //         }
-                    //     }
-                    // },
+                    new MyStringLiteralHandler("com.jetbrains.python.psi.StringLiteralExpression", "com.intellij.modules.python") {
+                        @Override
+                        protected String getValue(PsiElement psiElement) {
+                            try {
+                                Method getStringValue = this.getClazz().getMethod("getStringValue");
+                                return (String) getStringValue.invoke(psiElement);
+                            } catch (Exception e) {
+                                System.out.println("!!! Error GetValue: " + e.getMessage());
+                                return "";
+                            }
+                        }
+                    },
 
                     // Dart
                     new MyStringLiteralHandler("com.jetbrains.lang.dart.psi.DartStringLiteralExpression", "Dart") {
