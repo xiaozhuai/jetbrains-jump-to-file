@@ -17,7 +17,7 @@ public class MyFileReferenceContributor extends PsiReferenceContributor {
         }
     }
 
-    private void registerReferenceProvider(PsiReferenceRegistrar registrar, MyStringLiteralHandler handler) {
+    private void registerReferenceProvider(@NotNull PsiReferenceRegistrar registrar, @NotNull MyStringLiteralHandler handler) {
         registrar.registerReferenceProvider(StandardPatterns.instanceOf(handler.getClazz()), new PsiReferenceProvider() {
             @Override
             public PsiReference @NotNull [] getReferencesByElement(@NotNull PsiElement element, @NotNull ProcessingContext context) {
