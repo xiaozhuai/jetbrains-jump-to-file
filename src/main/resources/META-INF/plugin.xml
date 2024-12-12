@@ -14,6 +14,7 @@
     ]]></description>
     <change-notes><![CDATA[
     <ul>
+        <li><b>1.1.9</b> Support Clion Nova</li>
         <li><b>1.1.8</b> Turn on python support</li>
         <li><b>1.1.7</b> Support 243.*</li>
         <li><b>1.1.6</b> Support 242.*</li>
