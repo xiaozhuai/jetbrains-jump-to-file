@@ -111,25 +111,33 @@ public abstract class MyStringLiteralHandler {
                     },
 
                     // C/C++
-                    // new MyStringLiteralHandler("com.jetbrains.cidr.lang.psi.OCLiteralExpression", "com.jetbrains.cidr.lang") {
-                    //     @Override
-                    //     protected String getValue(PsiElement psiElement) {
-                    //         try {
-                    //             Method getValue = this.getClazz().getMethod("getValue");
-                    //             return (String) getValue.invoke(psiElement);
-                    //         } catch (Exception e) {
-                    //             System.out.println("!!! Error GetValue: " + e.getMessage());
-                    //             return "";
-                    //         }
-                    //     }
-                    // },
-                    // TODO: Support Clion Nova, aka Rider
                     new MyStringLiteralHandler("com.jetbrains.cidr.lang.psi.OCLiteralExpression", "com.intellij.modules.cidr.lang") {
                         @Override
                         protected String getValue(PsiElement psiElement) {
                             try {
                                 Method getUnescapedLiteralText = this.getClazz().getMethod("getUnescapedLiteralText");
                                 return (String) getUnescapedLiteralText.invoke(psiElement);
+                            } catch (Exception e) {
+                                System.out.println("!!! Error GetValue: " + e.getMessage());
+                                return "";
+                            }
+                        }
+                    },
+
+                    // C/C++ Clion Nova
+                    new MyStringLiteralHandler("com.jetbrains.rider.cpp.fileType.psi.CppStringLiteralExpression", "com.intellij.modules.rider.cpp.core") {
+                        @Override
+                        protected String getValue(PsiElement psiElement) {
+                            try {
+                                Class<?> escaperClazz = Class.forName("com.jetbrains.rider.cpp.fileType.psi.impl.CppLiteralExpressionTextEscaper", true, this.getClassLoader());
+                                Method createLiteralTextEscaper = this.getClazz().getMethod("createLiteralTextEscaper");
+                                Object escaper = createLiteralTextEscaper.invoke(psiElement);
+                                Method getRelevantTextRange = escaperClazz.getMethod("getRelevantTextRange");
+                                Method decode = escaperClazz.getMethod("decode", TextRange.class, StringBuilder.class);
+                                TextRange range = (TextRange) getRelevantTextRange.invoke(escaper);
+                                StringBuilder builder = new StringBuilder();
+                                decode.invoke(escaper, range, builder);
+                                return builder.toString();
                             } catch (Exception e) {
                                 System.out.println("!!! Error GetValue: " + e.getMessage());
                                 return "";
