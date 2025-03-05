@@ -53,6 +53,7 @@ public abstract class MyStringLiteralHandler {
 
     public final String getFinalValue(PsiElement psiElement) {
         String text = getValue(psiElement);
+        if (text == null) return "";
         text = removeScheme(text);
         return text;
     }
