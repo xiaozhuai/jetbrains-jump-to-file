@@ -14,6 +14,7 @@
     ]]></description>
     <change-notes><![CDATA[
     <ul>
+        <li><b>2.0.0</b> Fix some error</li>
         <li><b>1.1.13</b> Support 252.*</li>
         <li><b>1.1.12</b> Support 251.*</li>
         <li><b>1.1.10</b> Fix NullPointerException</li>
