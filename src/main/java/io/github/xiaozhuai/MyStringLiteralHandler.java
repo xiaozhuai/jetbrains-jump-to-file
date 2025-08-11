@@ -2,7 +2,6 @@ package io.github.xiaozhuai;
 
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import com.intellij.ide.plugins.PluginManagerCore;
-import com.intellij.openapi.extensions.PluginId;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 
@@ -11,40 +10,43 @@ import java.util.Objects;
 
 public abstract class MyStringLiteralHandler {
     private final String className;
-    private final String pluginId;
-    private final IdeaPluginDescriptor plugin;
-    private final ClassLoader classLoader;
     private final Class<PsiElement> clazz;
 
-    @SuppressWarnings("unchecked")
-    public MyStringLiteralHandler(String className, String pluginId) {
-        this.className = className;
-        this.pluginId = pluginId;
-        this.plugin = pluginId.isEmpty() ? null : PluginManagerCore.getPlugin(PluginId.getId(pluginId));
-        this.classLoader = plugin == null ? getClass().getClassLoader() : plugin.getPluginClassLoader();
-        Class<PsiElement> clazz = null;
+    public Class<?> findClassInAnyPlugin(String className) {
+        Class<?> clazz;
         try {
-            clazz = (Class<PsiElement>) Class.forName(className, true, classLoader);
-        } catch (ClassNotFoundException e) {
-            System.out.println("!!! Class not found: " + className);
+            clazz = Class.forName(className);
+            System.out.printf("### Found class %s in current classloader\n", className);
+            return clazz;
+        } catch (ClassNotFoundException ignored) {
+
         }
-        this.clazz = clazz;
+        for (IdeaPluginDescriptor plugin : PluginManagerCore.getLoadedPlugins()) {
+            try {
+                clazz = Class.forName(className, true, plugin.getPluginClassLoader());
+                System.out.printf("### Found class %s in plugin %s\n", className, plugin.getName());
+                return clazz;
+            } catch (ClassNotFoundException ignored) {
+            }
+        }
+        try {
+            clazz = Class.forName(className, true, ClassLoader.getSystemClassLoader());
+            System.out.printf("### Found class %s in system classloader\n", className);
+            return clazz;
+        } catch (ClassNotFoundException ignored) {
+        }
+        System.out.printf("!!! Class %s not found\n", className);
+        return null;
+    }
+
+    @SuppressWarnings("unchecked")
+    public MyStringLiteralHandler(String className) {
+        this.className = className;
+        this.clazz = (Class<PsiElement>) findClassInAnyPlugin(className);
     }
 
     public final String getClassName() {
         return className;
-    }
-
-    public final String getPluginId() {
-        return pluginId;
-    }
-
-    public final IdeaPluginDescriptor getPlugin() {
-        return plugin;
-    }
-
-    public final ClassLoader getClassLoader() {
-        return classLoader;
     }
 
     public final Class<PsiElement> getClazz() {
@@ -77,7 +79,7 @@ public abstract class MyStringLiteralHandler {
         if (handlers == null) {
             handlers = new MyStringLiteralHandler[]{
                     // Java & groovy
-                    new MyStringLiteralHandler("com.intellij.psi.PsiLiteral", "com.intellij.java") {
+                    new MyStringLiteralHandler("com.intellij.psi.PsiLiteral") {
                         @Override
                         protected String getValue(PsiElement psiElement) {
                             try {
@@ -91,11 +93,11 @@ public abstract class MyStringLiteralHandler {
                     },
 
                     // kotlin
-                    new MyStringLiteralHandler("org.jetbrains.kotlin.psi.KtStringTemplateExpression", "org.jetbrains.kotlin") {
+                    new MyStringLiteralHandler("org.jetbrains.kotlin.psi.KtStringTemplateExpression") {
                         @Override
                         protected String getValue(PsiElement psiElement) {
                             try {
-                                Class<?> escaperClazz = Class.forName("org.jetbrains.kotlin.psi.KotlinStringLiteralTextEscaper", true, this.getClassLoader());
+                                Class<?> escaperClazz = this.findClassInAnyPlugin("org.jetbrains.kotlin.psi.KotlinStringLiteralTextEscaper");
                                 Method createLiteralTextEscaper = this.getClazz().getMethod("createLiteralTextEscaper");
                                 Object escaper = createLiteralTextEscaper.invoke(psiElement);
                                 Method getRelevantTextRange = escaperClazz.getMethod("getRelevantTextRange");
@@ -112,7 +114,7 @@ public abstract class MyStringLiteralHandler {
                     },
 
                     // C/C++
-                    new MyStringLiteralHandler("com.jetbrains.cidr.lang.psi.OCLiteralExpression", "com.intellij.modules.cidr.lang") {
+                    new MyStringLiteralHandler("com.jetbrains.cidr.lang.psi.OCStringLiteralExpression") {
                         @Override
                         protected String getValue(PsiElement psiElement) {
                             try {
@@ -126,11 +128,11 @@ public abstract class MyStringLiteralHandler {
                     },
 
                     // C/C++ Clion Nova
-                    new MyStringLiteralHandler("com.jetbrains.rider.cpp.fileType.psi.CppStringLiteralExpression", "com.intellij.modules.rider.cpp.core") {
+                    new MyStringLiteralHandler("com.jetbrains.rider.cpp.fileType.psi.CppStringLiteralExpression") {
                         @Override
                         protected String getValue(PsiElement psiElement) {
                             try {
-                                Class<?> escaperClazz = Class.forName("com.jetbrains.rider.cpp.fileType.psi.impl.CppLiteralExpressionTextEscaper", true, this.getClassLoader());
+                                Class<?> escaperClazz = this.findClassInAnyPlugin("com.jetbrains.rider.cpp.fileType.psi.impl.CppLiteralExpressionTextEscaper");
                                 Method createLiteralTextEscaper = this.getClazz().getMethod("createLiteralTextEscaper");
                                 Object escaper = createLiteralTextEscaper.invoke(psiElement);
                                 Method getRelevantTextRange = escaperClazz.getMethod("getRelevantTextRange");
@@ -147,7 +149,7 @@ public abstract class MyStringLiteralHandler {
                     },
 
                     // JavaScript
-                    new MyStringLiteralHandler("com.intellij.lang.javascript.psi.JSLiteralExpression", "JavaScript") {
+                    new MyStringLiteralHandler("com.intellij.lang.javascript.psi.JSLiteralExpression") {
                         @Override
                         protected String getValue(PsiElement psiElement) {
                             try {
@@ -161,7 +163,7 @@ public abstract class MyStringLiteralHandler {
                     },
 
                     // PHP
-                    new MyStringLiteralHandler("com.jetbrains.php.lang.psi.elements.StringLiteralExpression", "com.jetbrains.php") {
+                    new MyStringLiteralHandler("com.jetbrains.php.lang.psi.elements.StringLiteralExpression") {
                         @Override
                         protected String getValue(PsiElement psiElement) {
                             try {
@@ -175,19 +177,7 @@ public abstract class MyStringLiteralHandler {
                     },
 
                     // Python
-                    // new MyStringLiteralHandler("com.jetbrains.python.psi.StringLiteralExpression", "Pythonid") {
-                    //     @Override
-                    //     protected String getValue(PsiElement psiElement) {
-                    //         try {
-                    //             Method getStringValue = this.getClazz().getMethod("getStringValue");
-                    //             return (String) getStringValue.invoke(psiElement);
-                    //         } catch (Exception e) {
-                    //             System.out.println("!!! Error GetValue: " + e.getMessage());
-                    //             return "";
-                    //         }
-                    //     }
-                    // },
-                    new MyStringLiteralHandler("com.jetbrains.python.psi.StringLiteralExpression", "com.intellij.modules.python") {
+                    new MyStringLiteralHandler("com.jetbrains.python.psi.StringLiteralExpression") {
                         @Override
                         protected String getValue(PsiElement psiElement) {
                             try {
@@ -201,7 +191,7 @@ public abstract class MyStringLiteralHandler {
                     },
 
                     // Dart
-                    new MyStringLiteralHandler("com.jetbrains.lang.dart.psi.DartStringLiteralExpression", "Dart") {
+                    new MyStringLiteralHandler("com.jetbrains.lang.dart.psi.DartStringLiteralExpression") {
                         @Override
                         protected String getValue(PsiElement psiElement) {
                             try {
@@ -222,7 +212,7 @@ public abstract class MyStringLiteralHandler {
                     },
 
                     // Go
-                    new MyStringLiteralHandler("com.goide.psi.GoStringLiteral", "org.jetbrains.plugins.go") {
+                    new MyStringLiteralHandler("com.goide.psi.GoStringLiteral") {
                         @Override
                         protected String getValue(PsiElement psiElement) {
                             try {
@@ -236,7 +226,7 @@ public abstract class MyStringLiteralHandler {
                     },
 
                     // Clojure via Cursive
-                    new MyStringLiteralHandler("cursive.psi.impl.ClStringLiteral", "com.cursiveclojure.cursive") {
+                    new MyStringLiteralHandler("cursive.psi.impl.ClStringLiteral") {
                         @Override
                         protected String getValue(PsiElement psiElement) {
                             try {
@@ -250,7 +240,7 @@ public abstract class MyStringLiteralHandler {
                     },
 
                     // Ruby
-                    new MyStringLiteralHandler("org.jetbrains.plugins.ruby.ruby.lang.psi.impl.basicTypes.stringLiterals.RStringLiteralBase", "org.jetbrains.plugins.ruby") {
+                    new MyStringLiteralHandler("org.jetbrains.plugins.ruby.ruby.lang.psi.impl.basicTypes.stringLiterals.RStringLiteralBase") {
                         @Override
                         protected String getValue(PsiElement psiElement) {
                             try {
@@ -264,11 +254,11 @@ public abstract class MyStringLiteralHandler {
                     },
 
                     // Rust
-                    new MyStringLiteralHandler("org.rust.lang.core.psi.RsLitExpr", "com.jetbrains.rust") {
+                    new MyStringLiteralHandler("org.rust.lang.core.psi.RsLitExpr") {
                         @Override
                         protected String getValue(PsiElement psiElement) {
                             try {
-                                Class<?> rsLitExprKtClazz = Class.forName("org.rust.lang.core.psi.ext.RsLitExprKt", true, this.getClassLoader());
+                                Class<?> rsLitExprKtClazz = this.findClassInAnyPlugin("org.rust.lang.core.psi.ext.RsLitExprKt");
                                 Method getStringValue = rsLitExprKtClazz.getMethod("getStringValue", this.getClazz());
                                 String text = (String) getStringValue.invoke(null, psiElement);
                                 return Objects.requireNonNullElse(text, "");
