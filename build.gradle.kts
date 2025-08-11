@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "io.github.xiaozhuai"
-version = "1.1.12"
+version = "1.1.13"
 
 repositories {
     mavenCentral()
@@ -29,7 +29,7 @@ tasks {
 
     patchPluginXml {
         sinceBuild.set("212")
-        untilBuild.set("251.*")
+        untilBuild.set("252.*")
     }
 
     signPlugin {
