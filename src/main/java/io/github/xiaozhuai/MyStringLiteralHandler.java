@@ -16,7 +16,7 @@ public abstract class MyStringLiteralHandler {
         Class<?> clazz;
         try {
             clazz = Class.forName(className);
-            System.out.printf("### Found class %s in current classloader\n", className);
+            // System.out.printf("### Found class %s in current classloader\n", className);
             return clazz;
         } catch (ClassNotFoundException ignored) {
 
@@ -24,14 +24,14 @@ public abstract class MyStringLiteralHandler {
         for (IdeaPluginDescriptor plugin : PluginManagerCore.getLoadedPlugins()) {
             try {
                 clazz = Class.forName(className, true, plugin.getPluginClassLoader());
-                System.out.printf("### Found class %s in plugin %s\n", className, plugin.getName());
+                // System.out.printf("### Found class %s in plugin %s\n", className, plugin.getName());
                 return clazz;
             } catch (ClassNotFoundException ignored) {
             }
         }
         try {
             clazz = Class.forName(className, true, ClassLoader.getSystemClassLoader());
-            System.out.printf("### Found class %s in system classloader\n", className);
+            // System.out.printf("### Found class %s in system classloader\n", className);
             return clazz;
         } catch (ClassNotFoundException ignored) {
         }
@@ -240,11 +240,11 @@ public abstract class MyStringLiteralHandler {
                     },
 
                     // Ruby
-                    new MyStringLiteralHandler("org.jetbrains.plugins.ruby.ruby.lang.psi.impl.basicTypes.stringLiterals.RStringLiteralBase") {
+                    new MyStringLiteralHandler("org.jetbrains.plugins.ruby.ruby.lang.psi.basicTypes.stringLiterals.RStringLiteral") {
                         @Override
                         protected String getValue(PsiElement psiElement) {
                             try {
-                                Method getContent = this.getClazz().getMethod("getContent");
+                                Method getContent = this.getClazz().getMethod("getContentValue");
                                 return (String) getContent.invoke(psiElement);
                             } catch (Exception e) {
                                 System.out.println("!!! Error GetValue: " + e.getMessage());
@@ -270,9 +270,7 @@ public abstract class MyStringLiteralHandler {
                     },
 
                     // TODO
-                    // Swift
                     // C#
-                    // Perl
             };
         }
         return handlers;
